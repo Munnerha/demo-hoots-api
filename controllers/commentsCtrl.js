@@ -20,6 +20,33 @@ const create = async (req, res) => {
   }
 };
 
+const update = async (req, res) => {
+  try {
+    const hoot = await Hoot.findById(req.params.hootId);
+    const comment = hoot.comments.id(req.params.commentId);
+
+    comment.text = req.body.text;
+    await hoot.save();
+    res.status(200).json({ message: 'Comment updated successfully' });
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+};
+
+const deleteComment = async (req, res) => {
+  try {
+    const hoot = await Hoot.findById(req.params.hootId);
+
+    hoot.comments.remove({ _id: req.params.commentId });
+    await hoot.save();
+    res.status(204).end();
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+};
+
 module.exports = {
   create,
+  update,
+  delete: deleteComment,
 };
